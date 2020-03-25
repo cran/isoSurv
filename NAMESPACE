@@ -1,0 +1,11 @@
+importFrom("stats", "model.response", "model.matrix", "model.frame","aggregate","formula","as.formula", "median")
+importFrom("graphics", "plot", "par")
+importFrom("survival", "Surv", "coxph")
+importFrom("Iso", "pava")
+
+export(isoph, isoph)
+export(bivisoph, bivisoph)
+export(iso, iso)
+
+S3method(plot, isoph, plot.isoph)
+S3method(plot, bivisoph, plot.bivisoph)
