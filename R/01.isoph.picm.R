@@ -21,9 +21,9 @@ isoph.picm=function(psi,m,z.obs,zk,k, dN2, Y2, dNsum, Delta, eps,maxiter, shape)
       break;
 
     if(shape=='increasing'){
-      exp.psi.new=pava(Delta/weight, weight)
+      exp.psi.new=Iso::pava(Delta/weight, weight)
     }else if(shape=='decreasing'){
-      exp.psi.new=-pava(-Delta/weight, weight)
+      exp.psi.new=-Iso::pava(-Delta/weight, weight)
     }
     psi.new=log(exp.psi.new)
 

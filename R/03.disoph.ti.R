@@ -1,4 +1,4 @@
-bivisoph.ti=function(TIME,STATUS,Z,ZNAME,P,Q,shape1,shape2,K, maxiter, eps){
+disoph.ti=function(TIME,STATUS,Z,ZNAME,P,Q,shape1,shape2,K, maxiter, eps){
   #Time: observed survival time
   #Status: 1 for event I(X<=T); 0 for censored
   #Z: Z1=Z[,1], ... ZP=Z[,P] for isotonic covariates; W1=Z[,P+1], W1=Z[,P+Q]: additional covariates
@@ -15,7 +15,7 @@ bivisoph.ti=function(TIME,STATUS,Z,ZNAME,P,Q,shape1,shape2,K, maxiter, eps){
   data1$Dt=diff(c(0,data1$X))
   data2=data1[order(data1$Z1),]
   n=nrow(data1)
-
+  
   #2. likelihood, using upper character
   X1=data1$X; #sorted by X
   Delta1=data1$DELTA
@@ -93,9 +93,10 @@ bivisoph.ti=function(TIME,STATUS,Z,ZNAME,P,Q,shape1,shape2,K, maxiter, eps){
 
   #5. initial values
   data.all$Z.BAR=data.all$Z1-Zk
-  formula="Surv(TIME,STATUS)~Z.BAR"
+  formula="survival::Surv(X,DELTA)~Z.BAR"
   if(Q>0) formula=paste(c(formula,paste0("+W",1:Q)),collapse ="")
-  res.initial=isoph.initial(formula,data.all,Q,shape2,z2.obs,Zk)
+
+  res.initial=isoph.initial(formula=formula,data.all=data.all,Q=Q,shape=shape2,z.obs=z2.obs,Zk=Zk)
   psi=res.initial$psi
   beta=res.initial$beta
 
@@ -105,6 +106,7 @@ bivisoph.ti=function(TIME,STATUS,Z,ZNAME,P,Q,shape1,shape2,K, maxiter, eps){
   wt2=rep(NA,n2)
   lik=0
   dist=1
+  
   while(dist>eps){
     iter=iter+1
     if(iter==maxiter)  break
@@ -112,19 +114,20 @@ bivisoph.ti=function(TIME,STATUS,Z,ZNAME,P,Q,shape1,shape2,K, maxiter, eps){
     #6.1. update lambda
     for(i in 1:n1)
       wt1[i]=sum(wt[i,]*exp(psi))
+    
     if(shape1=="increasing"){
-      lambda.upd=pava(delta1/wt1,wt1)
+      lambda.upd=Iso::pava(delta1/wt1,wt1)
     }else if(shape1=="decreasing"){
-      lambda.upd=-pava(-delta1/wt1,wt1)
+      lambda.upd=-Iso::pava(-delta1/wt1,wt1)
     }
-
+    
     #6.2. update psi
     for(j in 1:n2)
       wt2[j]=sum(wt[,j]*lambda.upd)
     if(shape2=="increasing"){
-      psi.upd=log(pava(delta2/wt2,wt2))
+      psi.upd=log(Iso::pava(delta2/wt2,wt2))
     }else if(shape2=="decreasing"){
-      psi.upd=log(-pava(-delta2/wt2,wt2))
+      psi.upd=log(-Iso::pava(-delta2/wt2,wt2))
     }
     psi.upd=psi.upd-psi.upd[k2] #anchor
 
@@ -141,8 +144,8 @@ bivisoph.ti=function(TIME,STATUS,Z,ZNAME,P,Q,shape1,shape2,K, maxiter, eps){
     conv="converged"
 
   #6. BTF (back to the full rank)
-  lambda.full=bivisoph.BTF1(n,n1,lambda.upd,X1,x1.obs,shape1)
-  psi.full=bivisoph.BTF2(n,n2,psi.upd,Z2,z2.obs,shape2)
+  lambda.full=disoph.BTF1(n,n1,lambda.upd,X1,x1.obs,shape1)
+  psi.full=disoph.BTF2(n,n2,psi.upd,Z2,z2.obs,shape2)
 
   #7 return
   labmda.res=data.frame(time=X1,lambda.hat=lambda.full)

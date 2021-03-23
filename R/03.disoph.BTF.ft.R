@@ -1,4 +1,4 @@
-bivisoph.BTF1=function(n,n1,lambda.upd,X1,x1.obs,shape1){
+disoph.BTF1=function(n,n1,lambda.upd,X1,x1.obs,shape1){
   lambda.full=rep(NA,n)
   for(i in 1:n1)
     lambda.full[which(X1 %in% x1.obs[i])]=lambda.upd[i]
@@ -23,7 +23,7 @@ bivisoph.BTF1=function(n,n1,lambda.upd,X1,x1.obs,shape1){
   return(lambda.full)
 }
 
-bivisoph.BTF2=function(n,n2,psi.upd,Z2,z2.obs,shape2){
+disoph.BTF2=function(n,n2,psi.upd,Z2,z2.obs,shape2){
   psi.full=rep(NA,n)
   for(j in 1:n2)
     psi.full[which(Z2 %in% z2.obs[j])]=psi.upd[j]

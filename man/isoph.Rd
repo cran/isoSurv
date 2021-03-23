@@ -19,8 +19,8 @@ where \eqn{\lambda0} is a baseline hazard function, \eqn{\psi} is an isotonic fu
 \item{beta}{estimated \eqn{\beta}.}
 \item{conv}{algorithm convergence status.}
 \item{iter}{total number of iterations.}
-\item{Zk}{anchor satisfying estimated \eqn{\psi(Zk)}=0.}
-\item{shape}{order restriction on \eqn{\psi}.}
+\item{Zk}{anchor satisfying estimated \eqn{\psi(Zk)}=0. See the formular argument above.}
+\item{shape}{order restriction on \eqn{\psi}. See the formular argument above.}
 }
 
 \references{Yunro Chung, Anastasia Ivanova, Michael G. Hudgens, Jason P. Fine, Partial likelihood estimation of isotonic proportional hazards models, Biometrika. 2018, 105 (1), 133-148. doi:10.1093/biomet/asx064}

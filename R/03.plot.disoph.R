@@ -1,4 +1,4 @@
-plot.bivisoph=function(x, ...){
+plot.disoph=function(x, ...){
   x1=x$iso.bh
   x2=x$iso.cov
 

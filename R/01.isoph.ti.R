@@ -9,7 +9,7 @@ isoph.ti=function(TIME, STATUS, Z, ZNAME, P, Q, shape, K, maxiter, eps){
   #eps: convergence criteria
 
   #1.sorted by z
-  data.all=data.frame(TIME,DELTA=STATUS,Z)
+  data.all=data.frame(X=TIME,DELTA=STATUS,Z)
   data=data.all[order(data.all$Z1),]
   n.total=nrow(data)
 
@@ -29,7 +29,7 @@ isoph.ti=function(TIME, STATUS, Z, ZNAME, P, Q, shape, K, maxiter, eps){
   n=nrow(data)
 
   #3. redefine variables
-  t=data$TIME
+  t=data$X
   delta=data$DELTA
   z=data$Z1
   w=data[,-c(1:3)]
@@ -57,7 +57,7 @@ isoph.ti=function(TIME, STATUS, Z, ZNAME, P, Q, shape, K, maxiter, eps){
 
   #6. initial values
   data.all$Z.BAR=data.all$Z1-Zk
-  formula="Surv(TIME,DELTA)~Z.BAR"
+  formula="survival::Surv(X,DELTA)~Z.BAR"
   if(Q>0) formula=paste(c(formula,paste0("+W",1:Q)),collapse ="")
   res.initial=isoph.initial(formula,data.all,Q,shape,z.obs,Zk)
   psi=res.initial$psi
@@ -120,7 +120,7 @@ isoph.ti=function(TIME, STATUS, Z, ZNAME, P, Q, shape, K, maxiter, eps){
 
   #8. compute psi at sort(Z1) from psi at z.obs
   z.full=sort(data.all$Z1)
-  psi.full=bivisoph.BTF2(n.total,m,psi.new,z.full,z.obs,shape)
+  psi.full=disoph.BTF2(n.total,m,psi.new,z.full,z.obs,shape)
 
   #return(list(est=est, exp.beta=exp.beta, conv=conv,
   #            psi=psi.obs, z=z.obs, z.range=z.range, K=K, shape=shape, n=n, nevent=sum(DELTA), njump=m,

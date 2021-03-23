@@ -1,8 +1,8 @@
 isoph=function(formula, data=NULL, maxiter=10^4, eps=10^-3){
 
   #1. Surv response and cov
-  mf=model.frame(formula=formula, data=data) #data must be data.frame
-  surv.y=model.response(mf)
+  mf=stats::model.frame(formula=formula, data=data) #data must be data.frame
+  surv.y=stats::model.response(mf)
   if(ncol(surv.y)==2){ #for time-indepnedent
     COV.TYPE='time.indep'
     TIME=surv.y[,1]; STATUS=surv.y[,2]

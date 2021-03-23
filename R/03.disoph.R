@@ -1,15 +1,15 @@
-bivisoph=function(formula, bshape="increasing", data=NULL, maxiter=10^4, eps=10^-3){
+disoph=function(formula, bshape="increasing", data=NULL, maxiter=10^4, eps=10^-3){
 
   if(bshape=="inc") bshape="increasing"
   if(bshape=="dec") bshape="decreasing"
 
   #1. Surv response and cov
-  mf=model.frame(formula=formula, data=data) #data must be data.frame
-  surv.y=model.response(mf)
-  if(ncol(surv.y)==2){ #for time-indepnedent
+  mf=stats::model.frame(formula=formula, data=data) #data must be data.frame
+  surv.y=stats::model.response(mf)
+  if(ncol(surv.y)==2){ #for time-independent
     COV.TYPE='time.indep'
     TIME=surv.y[,1]; STATUS=surv.y[,2]
-  }else if(ncol(surv.y)==3){ #for time-depnedent (or time-independent)
+  }else if(ncol(surv.y)==3){ #for time-dependent (or time-independent)
     COV.TYPE='time.dep'
     START=surv.y[,1]; STOP=surv.y[,2];  STATUS=surv.y[,3]
   }
@@ -65,10 +65,10 @@ bivisoph=function(formula, bshape="increasing", data=NULL, maxiter=10^4, eps=10^
     }else if(Q>0){
       stop("Additional covariates are not supported for the current version of the isoSurv package")
     }else if(P==1){ #single iso cov
-      res=bivisoph.ti(TIME=TIME, STATUS=STATUS, Z=Z, ZNAME=ZNAME, P=P, Q=Q, shape1=bshape, shape2=shape, K=K, maxiter=maxiter, eps=eps)
+      res=disoph.ti(TIME=TIME, STATUS=STATUS, Z=Z, ZNAME=ZNAME, P=P, Q=Q, shape1=bshape, shape2=shape, K=K, maxiter=maxiter, eps=eps)
       res$call=match.call()
       res$formula=formula
-      class(res)="bivisoph"
+      class(res)="disoph"
     }else if(P>=2){ #double iso covs for additive iso
       stop("More than two isotonic covariates are not supported for the current version of the isoSurv package")
     }

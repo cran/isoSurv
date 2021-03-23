@@ -4,8 +4,8 @@ importFrom("survival", "Surv", "coxph")
 importFrom("Iso", "pava")
 
 export(isoph, isoph)
-export(bivisoph, bivisoph)
+export(disoph, disoph)
 export(iso, iso)
 
 S3method(plot, isoph, plot.isoph)
-S3method(plot, bivisoph, plot.bivisoph)
+S3method(plot, disoph, plot.disoph)
