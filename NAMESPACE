@@ -1,6 +1,6 @@
-importFrom("stats", "model.response", "model.matrix", "model.frame","aggregate","formula","as.formula", "median")
+importFrom("stats", "model.response", "model.matrix", "model.frame","aggregate","formula","as.formula", "median","runif")
 importFrom("graphics", "plot", "par")
-importFrom("survival", "Surv", "coxph")
+importFrom("survival", "Surv", "coxph", "survreg")
 importFrom("Iso", "pava")
 
 export(isoph, isoph)

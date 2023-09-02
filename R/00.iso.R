@@ -1,9 +1,11 @@
-iso=function(z,shape="increasing",K=NA){
+iso=function(z,shape){
+  shape=tolower(shape)
   if(shape=="inc") shape="increasing"
   if(shape=="dec") shape="decreasing"
   zname=deparse(substitute(z))
-  if(is.na(K)) K=stats::median(z) #median anchor
+  K=stats::median(z)
 
   attributes(z) = c(list(name=zname,shape=shape,K=K))
+  class(z)="iso covariate"
   return(z=z)
 }

@@ -59,7 +59,7 @@ isoph.ti=function(TIME, STATUS, Z, ZNAME, P, Q, shape, K, maxiter, eps){
   data.all$Z.BAR=data.all$Z1-Zk
   formula="survival::Surv(X,DELTA)~Z.BAR"
   if(Q>0) formula=paste(c(formula,paste0("+W",1:Q)),collapse ="")
-  res.initial=isoph.initial(formula,data.all,Q,shape,z.obs,Zk)
+  res.initial=isoph.initial(formula,data.all,P,Q,shape,z.obs,Zk)
   psi=res.initial$psi
   beta=res.initial$beta
 
@@ -137,5 +137,4 @@ isoph.ti=function(TIME, STATUS, Z, ZNAME, P, Q, shape, K, maxiter, eps){
 
   res=list(iso.cov=iso.cov,beta=beta.res,
            conv=conv,iter=iter,Zk=Zk,shape=shape)
-
 }

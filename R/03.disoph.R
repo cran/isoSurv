@@ -1,5 +1,6 @@
-disoph=function(formula, bshape="increasing", data=NULL, maxiter=10^4, eps=10^-3){
+disoph=function(formula, bshape, data=NULL, maxiter=10^4, eps=10^-3){
 
+  bshape=tolower(bshape)
   if(bshape=="inc") bshape="increasing"
   if(bshape=="dec") bshape="decreasing"
 
@@ -15,63 +16,76 @@ disoph=function(formula, bshape="increasing", data=NULL, maxiter=10^4, eps=10^-3
   }
 
   #2. COV.TYPE is time.indep or time.dep
+  Z.P=Z.Q=list() #Z.P for isotonic covariates; Z.Q for additional covariates
+  P=Q=0 #number of isotonic & additioal covariates
+  shape=K=ZNAME.P=ZNAME.Q=NULL
+
   if(COV.TYPE=='time.indep'){
     Z.mf=mf[,-1] #mf[,1]: surv outcome; mf[,2] cov
-    P.mf=ncol(mf)-1 #number of covariates
+    if(ncol(mf)==2){ #single covariate
+      P.mf=1
+      if(inherits(Z.mf,"iso covariate")){ #is there a better approach?
+        P=1
+        Z.P[[P]]=Z.mf
 
-    #2.1. attributes
-    Z.mf.attr=list()
-    if(P.mf==1){ #single cov
-      if(is.null(attributes(Z.mf))){; Z.mf.attr[[1]]=NA;
-      }else{; Z.mf.attr[[1]]=attributes(Z.mf);
+        Z.mf.attr=attributes(Z.mf);
+        shape[P]=Z.mf.attr$shape
+        K[P]=Z.mf.attr$K
+        ZNAME.P[P]=Z.mf.attr$name
+      }else{
+        Q=Q+1
+        Z.Q[[Q]]=Z.mf
+
+        ZNAME.Q[Q]=colnames(Z.mf)
       }
-      Z.mf=matrix(Z.mf)
-    }else if(P.mf>=2){ #more than 2 cov
+    }else{ #multiple covariate
+      P.mf=ncol(Z.mf)
       for(j in 1:P.mf){
-        if(is.null(attributes(Z.mf[,j]))){; Z.mf.attr[[j]]=NA;
-        }else{; Z.mf.attr[[j]]=attributes(Z.mf[,j]);
+        if(inherits(Z.mf[,j],"iso covariate")){
+          P=P+1
+          Z.P[[P]]=Z.mf[,j]
+
+          Z.mf.attr=attributes(Z.mf[,j]);
+          shape[P]=Z.mf.attr$shape
+          K[P]=Z.mf.attr$K
+          ZNAME.P[P]=Z.mf.attr$name
+        }else{
+          Q=Q+1
+          Z.Q[[Q]]=Z.mf[,j]
+          ZNAME.Q[Q]=colnames(Z.mf)[j]
         }
       }
     }
+    if(P>0){
+      Z.P=do.call("cbind",Z.P)
+      colnames(Z.P)=paste0("Z",1:P)
+    }
+    if(Q>0){
+      Z.Q=do.call("cbind",Z.Q)
+      colnames(Z.Q)=paste0("W",1:Q)
+    }
 
-    #2.2. Seperate covariates to isotonic & additional covariates
-    Z.P=Z.Q=list() #Z.P for isotonic covariates; Z.Q for additional covariates
-    P=Q=0 #number of isotonic & additioal covariates
-    shape=K=ZNAME.P=ZNAME.Q=NULL
-    for(j in 1:P.mf){
-      if(is.na(Z.mf.attr[[j]][1])){
-        Q=Q+1
-        Z.Q[[Q]]=Z.mf[,j]
-        ZNAME.Q[Q]=colnames(Z.mf)[j]
-      }else{
-        P=P+1
-        shape[P]=Z.mf.attr[[j]]$shape
-        K[P]=Z.mf.attr[[j]]$K
-        ZNAME.P[P]=Z.mf.attr[[j]]$name
-        Z.P[[P]]=Z.mf[,j]
-      }
-    }
-    Z.P=do.call("cbind",Z.P)
-    Z.Q=do.call("cbind",Z.Q)
-    Z=cbind(Z.P,Z.Q)
-    ZNAME=c(ZNAME.P,ZNAME.Q)
-    if(P>0 & Q>0){; colnames(Z)=c(paste0("Z",1:P),paste0("W",1:Q))
-    }else if(Q==0){; colnames(Z)=paste0("Z",1:P)
-    }
-    #colnames(Z)=c(paste0("iso",".",ZNAME.P),ZNAME.Q)
+    shape1=bshape #shape for baseline hazard function
+    shape2=shape  #shape for covarate effect function (it can be NULL, if no z is in the formla object)
 
-    if(P==0){
-      stop("there are no isotonic covariates in the formula")
-    }else if(Q>0){
-      stop("Additional covariates are not supported for the current version of the isoSurv package")
-    }else if(P==1){ #single iso cov
-      res=disoph.ti(TIME=TIME, STATUS=STATUS, Z=Z, ZNAME=ZNAME, P=P, Q=Q, shape1=bshape, shape2=shape, K=K, maxiter=maxiter, eps=eps)
-      res$call=match.call()
-      res$formula=formula
-      class(res)="disoph"
-    }else if(P>=2){ #double iso covs for additive iso
-      stop("More than two isotonic covariates are not supported for the current version of the isoSurv package")
+    if(P>0&Q==0){ #iso covs only
+      Z=Z.P
+      ZNAME=ZNAME.P
+      res=disoph.ti1(TIME=TIME, STATUS=STATUS, Z=Z, ZNAME=ZNAME, P=P, Q=Q, shape1=bshape, shape2=shape, K=K, maxiter=maxiter, eps=eps)
+    }else if(P==0&Q>0){ #par cov only
+      #Z=Z.Q
+      #ZNAME=ZNAME.Q
+      #res=disoph.ti2(TIME=TIME, STATUS=STATUS, Z=Z, ZNAME=ZNAME, P=P, Q=Q, shape1=bshape, shape2=shape, K=K, maxiter=maxiter, eps=eps)
+    }else if(P>0&Q>0){ #iso & par covs only
+      Z=cbind(Z.P,Z.Q)
+      ZNAME=c(ZNAME.P,ZNAME.Q)
+      res=disoph.ti3(TIME=TIME, STATUS=STATUS, Z=Z, ZNAME=ZNAME, P=P, Q=Q, shape1=bshape, shape2=shape, K=K, maxiter=maxiter, eps=eps)
     }
+
+    res$call=match.call()
+    res$formula=formula
+    class(res)="disoph"
+
   }else if(COV.TYPE=='time.dep'){
     stop("time-depdent cov is not supported for the current version of the isoph package")
   }

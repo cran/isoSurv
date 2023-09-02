@@ -1,16 +1,22 @@
 Package: isoSurv
 Type: Package
 Title: Isotonic Regression on Survival Analysis
-Version: 0.2.0
-Date: 2021-3-22
-Author: Yunro Chung [aut, cre]
-Maintainer: Yunro Chung <yunro.chung@asu.edu>
-Description: Nonparametric estimation on survival analysis under order restrictions. It estimates monotone increasing or decreasing covariate effects in the proportional hazards model. Yunro Chung et al. (2018) <doi:10.1093/biomet/asx064>.
-Depends: R (>= 3.6.0), Iso, survival
+Version: 0.3.0
+Date: 2023-9-1
+Authors@R: 
+  c(person(given = "Yunro",
+           family = "Chung",
+           role = c("aut", "cre"),
+           email = "yunro.chung@asu.edu",
+           comment = c(ORCID = "0000-0001-9125-9277"))
+    )
+Description: Nonparametric estimation on survival analysis under order-restrictions.
+Depends: R (>= 3.6.0), Iso, survival, stats, graphics
 License: GPL (>= 2)
 Encoding: UTF-8
-LazyData: true
 NeedsCompilation: no
-Packaged: 2021-03-22 21:18:28 UTC; roy
+Packaged: 2023-09-02 06:09:36 UTC; ychung36
+Author: Yunro Chung [aut, cre] (<https://orcid.org/0000-0001-9125-9277>)
+Maintainer: Yunro Chung <yunro.chung@asu.edu>
 Repository: CRAN
-Date/Publication: 2021-03-23 01:00:10 UTC
+Date/Publication: 2023-09-02 06:30:06 UTC
